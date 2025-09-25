@@ -1,11 +1,10 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+require('dotenv').config();
 
-mongoose.connect('mongodb://localhost:27017/wifi_monitor', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
+mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+
 
 const DeviceSchema = new mongoose.Schema({
   ssid: String,
