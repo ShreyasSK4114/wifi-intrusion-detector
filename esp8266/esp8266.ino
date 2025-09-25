@@ -3,7 +3,7 @@
 
 const char* ssid     = "Sunil BSNL";           // Your Wi-Fi SSID
 const char* password = "9844007710";           // Your Wi-Fi password
-const char* serverUrl = "http://192.168.1.37:5000/api/networks"; // Your backend IP and port
+const char* serverUrl = "https://your-backend-url.onrender.com/api/networks"; // Your backend IP and port
 
 void setup() {
   Serial.begin(115200);

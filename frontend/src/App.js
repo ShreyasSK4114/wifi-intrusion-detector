@@ -5,7 +5,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetch("http://localhost:5000/api/networks")
+    fetch("https://your-backend-url.onrender.com/api/networks")
       .then(res => res.json())
       .then(setDevices);
   }, []);
