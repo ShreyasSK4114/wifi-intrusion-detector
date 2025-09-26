@@ -1,10 +1,9 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
 
-const char* ssid     = "Sunil BSNL";           // Your Wi-Fi SSID
-const char* password = "9844007710";           // Your Wi-Fi password
-const char* serverUrl = "https://wifi-intrusion-detector-6af5-3rsbaka3p.vercel.app/api/networks";
- // Your backend IP and port
+const char* ssid     = "Sunil BSNL";            // Replace with your Wi-Fi SSID
+const char* password = "9844007710";        // Replace with your Wi-Fi password
+const char* serverUrl = "https://wifi-intrusion-detector-6af5-3rsbaka3p.vercel.app/api/networks"; // Your deployed backend API URL
 
 void setup() {
   Serial.begin(115200);
@@ -26,9 +25,10 @@ void loop() {
   json += "]";
 
   if (WiFi.status() == WL_CONNECTED) {
-    WiFiClient client;                  // Create Wi-Fi client
+    WiFiClientSecure client;                // Use secure client for HTTPS
+    client.setInsecure();                   // Skip certificate validation (for testing)
     HTTPClient http;
-    http.begin(client, serverUrl);     // Specify destination
+    http.begin(client, serverUrl);
     http.addHeader("Content-Type", "application/json");
     int httpResponseCode = http.POST(json);
 
@@ -37,6 +37,5 @@ void loop() {
 
     http.end();
   }
-
-  delay(15000);  // Wait 15 seconds before next scan
+  delay(15000);
 }
