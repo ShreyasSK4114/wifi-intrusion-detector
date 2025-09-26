@@ -1,39 +1,59 @@
-const express = require('express');
-const mongoose = require('mongoose');
-require('dotenv').config();
+import express from "express";
+import mongoose from "mongoose";
+import cors from "cors";
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
+app.use(cors());
 app.use(express.json());
 
+// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI, {
   useNewUrlParser: true,
   useUnifiedTopology: true,
-});
+}).then(() => console.log("MongoDB connected"))
+  .catch(err => console.error(err));
 
-const DeviceSchema = new mongoose.Schema({
+// Schema
+const networkSchema = new mongoose.Schema({
   ssid: String,
-  bssid: String,
+  bssid: { type: String, unique: true },
   rssi: Number,
-  scannedAt: { type: Date, default: Date.now }
-});
-const Device = mongoose.model('Device', DeviceSchema);
-
-app.post('/api/networks', async (req, res) => {
-  const devices = req.body;
-  const ops = devices.map(d => ({
-    updateOne: {
-      filter: { bssid: d.bssid },
-      update: { $set: { ssid: d.ssid, rssi: d.rssi, scannedAt: new Date() } },
-      upsert: true,
-    },
-  }));
-  await Device.bulkWrite(ops);
-  res.status(200).json({ message: 'Devices updated' });
+  lastSeen: { type: Date, default: Date.now }
 });
 
-app.get('/api/networks', async (req, res) => {
-  const devices = await Device.find().sort({ scannedAt: -1 }).limit(100);
-  res.json(devices);
+const Network = mongoose.model("Network", networkSchema);
+
+// POST /api/networks
+app.post("/api/networks", async (req, res) => {
+  const devices = req.body.devices;
+  try {
+    for (let device of devices) {
+      await Network.findOneAndUpdate(
+        { bssid: device.bssid },
+        { ...device, lastSeen: new Date() },
+        { upsert: true, new: true }
+      );
+    }
+    res.json({ status: "success" });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ status: "error", message: err.message });
+  }
 });
 
-module.exports = app;
+// GET /api/networks
+app.get("/api/networks", async (req, res) => {
+  try {
+    const networks = await Network.find()
+      .sort({ lastSeen: -1 })
+      .limit(100);
+    res.json(networks);
+  } catch (err) {
+    res.status(500).json({ status: "error", message: err.message });
+  }
+});
+
+export default app;

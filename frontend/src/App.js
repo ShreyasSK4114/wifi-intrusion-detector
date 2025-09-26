@@ -1,31 +1,43 @@
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 
 function App() {
-  const [devices, setDevices] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
+  const [networks, setNetworks] = useState([]);
+  const [search, setSearch] = useState("");
 
   useEffect(() => {
-    fetch("https://wifi-intrusion-detector-6af5-hv5fp0wlv.vercel.app/api/networks")
-      .then(res => res.json())
-      .then(setDevices);
+    fetchNetworks();
+    const interval = setInterval(fetchNetworks, 10000); // auto-refresh every 10s
+    return () => clearInterval(interval);
   }, []);
 
-  const filteredDevices = devices.filter(d =>
-    d.ssid.toLowerCase().includes(searchTerm.toLowerCase()) ||
-    d.bssid.toLowerCase().includes(searchTerm.toLowerCase())
+  const fetchNetworks = async () => {
+    try {
+      const res = await axios.get("https://wifi-intrusion-detector-6af5.vercel.app/api/networks");
+
+      setNetworks(res.data);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const filtered = networks.filter(
+    n =>
+      n.ssid.toLowerCase().includes(search.toLowerCase()) ||
+      n.bssid.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div style={{ padding: 32 }}>
-      <h2>Wi-Fi Devices Around</h2>
+    <div style={{ padding: 20, fontFamily: "Arial", background: "#121212", color: "#fff" }}>
+      <h1>Wi-Fi Intrusion Detector</h1>
       <input
         type="text"
-        placeholder="Search by SSID or BSSID"
-        value={searchTerm}
-        onChange={e => setSearchTerm(e.target.value)}
-        style={{ marginBottom: 16, padding: 8, width: '100%' }}
+        placeholder="Search SSID or BSSID..."
+        value={search}
+        onChange={e => setSearch(e.target.value)}
+        style={{ padding: 8, marginBottom: 20, width: "100%" }}
       />
-      <table border="1" cellPadding={6} width="100%">
+      <table style={{ width: "100%", borderCollapse: "collapse" }}>
         <thead>
           <tr>
             <th>SSID</th>
@@ -35,12 +47,12 @@ function App() {
           </tr>
         </thead>
         <tbody>
-          {filteredDevices.map((d, i) => (
-            <tr key={i}>
-              <td>{d.ssid}</td>
-              <td>{d.bssid}</td>
-              <td>{d.rssi}</td>
-              <td>{new Date(d.scannedAt).toLocaleString()}</td>
+          {filtered.map(n => (
+            <tr key={n.bssid}>
+              <td>{n.ssid}</td>
+              <td>{n.bssid}</td>
+              <td>{n.rssi}</td>
+              <td>{new Date(n.lastSeen).toLocaleString()}</td>
             </tr>
           ))}
         </tbody>
