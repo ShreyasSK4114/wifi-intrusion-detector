@@ -1,11 +1,11 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
+#include <WiFiClientSecureBearSSL.h>
 #include <ArduinoJson.h>
 
 const char* ssid = "Sunil BSNL";
 const char* password = "9844007710";
 const char* serverUrl = "https://wifi-intrusion-detector-6af5.vercel.app/api/networks";
-
 
 void setup() {
   Serial.begin(115200);
@@ -33,8 +33,11 @@ void loop() {
     }
 
     if (WiFi.status() == WL_CONNECTED) {
+      // Use WiFiClientSecure for HTTPS
+      WiFiClientSecure client;
+      client.setInsecure(); // Skip certificate verification (for testing)
       HTTPClient http;
-      http.begin(serverUrl);
+      http.begin(client, serverUrl);
       http.addHeader("Content-Type", "application/json");
 
       String json;
