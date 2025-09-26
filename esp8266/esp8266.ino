@@ -3,7 +3,7 @@
 
 const char* ssid     = "Sunil BSNL";           // Your Wi-Fi SSID
 const char* password = "9844007710";           // Your Wi-Fi password
-const char* serverUrl = "https://wifi-intrusion-detector-6af5-3rsbaka3p.vercel.app";
+const char* serverUrl = "https://wifi-intrusion-detector-6af5-3rsbaka3p.vercel.app\api\networks";
  // Your backend IP and port
 
 void setup() {
