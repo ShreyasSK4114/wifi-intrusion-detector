@@ -5,7 +5,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    fetch("https://wifi-intrusion-detector-6af5-3rsbaka3p.vercel.app/api/networks")
+    fetch("https://wifi-intrusion-detector-6af5-hv5fp0wlv.vercel.app/api/networks")
       .then(res => res.json())
       .then(setDevices);
   }, []);

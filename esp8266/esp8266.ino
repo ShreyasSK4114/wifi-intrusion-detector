@@ -3,7 +3,7 @@
 
 const char* ssid     = "Sunil BSNL";            // Replace with your Wi-Fi SSID
 const char* password = "9844007710";        // Replace with your Wi-Fi password
-const char* serverUrl = "https://wifi-intrusion-detector-6af5-3rsbaka3p.vercel.app/api/networks"; // Your deployed backend API URL
+const char* serverUrl = "https://wifi-intrusion-detector-6af5-hv5fp0wlv.vercel.app/api/networks"; // Your deployed backend API URL
 
 void setup() {
   Serial.begin(115200);
